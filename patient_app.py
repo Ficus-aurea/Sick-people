@@ -76,18 +76,33 @@ class PatientApp:
            
             btn.pack(side=tk.TOP, pady=8)
 
-  
+
+        table_frame = tk.Frame(self.root, bg=BG_COLOR)
+        table_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+
+        scroll_x = ttk.Scrollbar(table_frame, orient="horizontal")
+        scroll_y = ttk.Scrollbar(table_frame, orient="vertical")
+
         columns = ("fullname", "age", "gender", "height", "weight", "bmi")
-        self.tree = ttk.Treeview(self.root, columns=columns, show="headings")
+        
+        self.tree = ttk.Treeview(table_frame, columns=columns, show="headings",
+                                 xscrollcommand=scroll_x.set,
+                                 yscrollcommand=scroll_y.set)
+        
+        scroll_x.config(command=self.tree.xview)
+        scroll_y.config(command=self.tree.yview)
+
+        scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+        scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+        self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
         headers = ["ФИО", "Возраст", "Пол", "Рост (см)", "Вес (кг)", "ИМТ"]
-        widths = [300, 80, 60, 100, 100, 80]
+        widths = [450, 80, 60, 100, 100, 80]
         
         for col, header, width in zip(columns, headers, widths):
             self.tree.heading(col, text=header)
-            self.tree.column(col, width=width, anchor=tk.CENTER if col != "fullname" else tk.W)
-
-        self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+            self.tree.column(col, width=width, minwidth=50, anchor=tk.CENTER if col != "fullname" else tk.W)
         self.refresh_table()
 
     def create_cloud_icon(self, width, height):
@@ -99,18 +114,10 @@ class PatientApp:
         draw = ImageDraw.Draw(img)
         
         white = (255, 255, 255, 255)
-
-        
   
         draw.ellipse([width*0.1, height*0.35, width*0.9, height*0.95], fill=white)
-        
-
         draw.ellipse([width*0.15, height*0.20, width*0.45, height*0.70], fill=white)
-        
-    
         draw.ellipse([width*0.35, height*0.05, width*0.70, height*0.80], fill=white)
-        
-    
         draw.ellipse([width*0.60, height*0.20, width*0.90, height*0.70], fill=white)
         
         return ImageTk.PhotoImage(img)
